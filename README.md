@@ -1,6 +1,6 @@
-# 🏠 HDB Price Predicton
+# 🏠 HDB Valuation Calculator (LITE)
 ## 🔥 Description
-The HDB Valuation Calculator builds on existing data sets to provide users with an accurate estimation of their flats resale value based on various factors. This will serve as a decision-making tool to help our users make better decisions regarding the resale value of their property, based on pre-existing market trends. 
+The HDB Valuation Calculator (LITE), is a lightweight version of the original HDB Valuation Calculator (HDBVC). The HDBVC builds on existing data sets to provide users with an accurate estimation of their flats resale value based on various factors. This will serve as a decision-making tool to help our users make better decisions regarding the resale value of their property, based on pre-existing market trends. 
 
 In this current market, it is difficult to make proper estimations for a flats resale price without having access to the data required to assess various factors. This can be troubling for newer homeowners who aren’t experienced in the field, leading to inaccurate valuations that can tank their overall return.
 
@@ -31,15 +31,15 @@ Out of these 9 features, we carried out testing to figure out which primary feat
 - 📂 **Sample Dataset** – Included for quick testing and demonstration.
 
 ## 📂 Project Structure
-```text
-HDBPricePredictor
-├── main.py                    # Entry point for the application
-├── cli_interface.py           # Command-line interface
-├── data_processor.py          # Data cleaning and transformation
-├── hdb_polynomial_model.py    # Model training & prediction
-├── visualizer.py              # Chart and graph generation
-├── sample_data.csv            # Example dataset
-└── pyproject.toml             # Dependencies & build configuration
+```
+HDBVC (LITE)
+├── main.py                   # Main entry point 
+├── cli_interface.py          # CLI Engine
+├── hdb_polynomial_model.py   # Machine Learning Model
+├── data_processor.py         # Data Cleaning Engine
+├── visualizer.py             # Visualisation Engine
+├── sample_data.csv           # HDB dataset (37,153 records)
+└── /graphs/                  # Generated visualization files
 ```
 
 ## ⭐ Credits
