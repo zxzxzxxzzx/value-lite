@@ -200,13 +200,13 @@ class SimplifiedHDBCalculatorCLI:
                         'red')
 
         flat_types = self.model.get_available_flat_types()
-        print("\nFlat Types ({} available):".format(len(flat_types)))
+        print("Flat Types:")
         for i, flat_type in enumerate(flat_types, 1):
             print("  {}. {}".format(i, flat_type))
 
         while True:
-            flat_input = input("Select flat type (1-{}): ".format(
-                len(flat_types))).strip()
+            flat_input = input("Select flat type [{}]: ".format(
+                "/".join([str(i) for i in range(1, len(flat_types) + 1)]))).strip()
             if flat_input.isdigit():
                 flat_idx = int(flat_input) - 1
                 if 0 <= flat_idx < len(flat_types):
@@ -216,6 +216,7 @@ class SimplifiedHDBCalculatorCLI:
                 "❌ Invalid selection. Please select 1-{}".format(
                     len(flat_types)), 'red')
 
+        self.print_colored("💡 Typical ranges: 2-room (34-64 sqm), 3-room (60-90 sqm), 4-room (80-120 sqm)", 'yellow')
         while True:
             try:
                 area = float(input("Enter floor area (sqm): "))
@@ -229,13 +230,13 @@ class SimplifiedHDBCalculatorCLI:
                 self.print_colored("❌ Please enter a valid number", 'red')
 
         storey_ranges = self.model.get_available_storey_ranges()
-        print("\nStorey Ranges ({} available):".format(len(storey_ranges)))
+        print("Storey Ranges:")
         for i, storey in enumerate(storey_ranges, 1):
             print("  {}. {}".format(i, storey))
 
         while True:
-            storey_input = input("Select storey range (1-{}): ".format(
-                len(storey_ranges))).strip()
+            storey_input = input("Select storey range [{}]: ".format(
+                "/".join([str(i) for i in range(1, len(storey_ranges) + 1)]))).strip()
             if storey_input.isdigit():
                 storey_idx = int(storey_input) - 1
                 if 0 <= storey_idx < len(storey_ranges):
@@ -246,35 +247,48 @@ class SimplifiedHDBCalculatorCLI:
                     len(storey_ranges)), 'red')
 
         flat_models = self.model.get_available_flat_models()
-        print("\nFlat Models ({} available):".format(len(flat_models)))
-        for i, model in enumerate(flat_models, 1):
-            print("  {}. {}".format(i, model))
+        
+        # Simplify flat models display to show only common ones
+        common_models = ['MODEL A', 'IMPROVED', 'NEW GENERATION', 'PREMIUM APARTMENT', 'STANDARD', 'APARTMENT']
+        display_models = []
+        for model in common_models:
+            if model in flat_models:
+                display_models.append(model)
+        
+        # Add any remaining models not in common list
+        for model in flat_models:
+            if model not in display_models:
+                display_models.append(model)
+        
+        print("Flat Models:")
+        for i, model in enumerate(display_models[:6], 1):  # Show only first 6 for cleaner display
+            display_name = model.replace('MODEL A', 'Model A').replace('NEW GENERATION', 'New Generation').replace('PREMIUM APARTMENT', 'Premium Apartment')
+            print("  {}. {}".format(i, display_name))
 
         while True:
-            model_input = input("Select flat model (1-{}): ".format(
-                len(flat_models))).strip()
+            model_input = input("Select flat model [{}]: ".format(
+                "/".join([str(i) for i in range(1, min(6, len(display_models)) + 1)]))).strip()
             if model_input.isdigit():
                 model_idx = int(model_input) - 1
-                if 0 <= model_idx < len(flat_models):
-                    inputs['flat_model'] = flat_models[model_idx]
+                if 0 <= model_idx < min(6, len(display_models)):
+                    inputs['flat_model'] = display_models[model_idx]
                     break
             self.print_colored(
                 "❌ Invalid selection. Please select 1-{}".format(
-                    len(flat_models)), 'red')
+                    min(6, len(display_models))), 'red')
 
+        self.print_colored("💡 Most HDB flats have 50-90 years remaining lease", 'yellow')
         while True:
             try:
-                lease_year = int(input("Enter lease commence date (year): "))
-                if 1960 <= lease_year <= 2023:
-                    current_year = 2024
-                    inputs['remaining_lease'] = 99 - (current_year -
-                                                      lease_year)
+                remaining_lease = int(input("Enter remaining lease (years): "))
+                if 40 <= remaining_lease <= 99:
+                    inputs['remaining_lease'] = remaining_lease
                     break
                 else:
                     self.print_colored(
-                        "❌ Lease year must be between 1960-2023", 'red')
+                        "❌ Remaining lease must be between 40-99 years", 'red')
             except ValueError:
-                self.print_colored("❌ Please enter a valid year", 'red')
+                self.print_colored("❌ Please enter a valid number", 'red')
 
         return inputs
 
