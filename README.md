@@ -1,6 +1,6 @@
 # 🏠 HDB Valuation Calculator (LITE)
 ## 🔥 Description
-The HDB Valuation Calculator (LITE), is a lightweight version of the original HDB Valuation Calculator (HDBVC). The HDBVC builds on existing data sets to provide users with an accurate estimation of their flats resale value based on various factors. This will serve as a decision-making tool to help our users make better decisions regarding the resale value of their property, based on pre-existing market trends. 
+The HDB Valuation Calculator (LITE), is a lightweight version of the original HDB Valuation Calculator (HDBVC). The HDB Vaulation Calculator builds on existing data sets to provide users with an accurate estimation of their flats resale value based on various factors. This will serve as a decision-making tool to help our users make better decisions regarding the resale value of their property, based on pre-existing market trends. 
 
 In this current market, it is difficult to make proper estimations for a flats resale price without having access to the data required to assess various factors. This can be troubling for newer homeowners who aren’t experienced in the field, leading to inaccurate valuations that can tank their overall return.
 
