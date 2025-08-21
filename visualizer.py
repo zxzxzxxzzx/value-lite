@@ -1,3 +1,5 @@
+# SOURITRA SAMANTA (3C)
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -12,7 +14,7 @@ try:
             pass
     sns.set_palette("husl")
 except ImportError:
-    plt.style.use('ggplot')
+    plt.style.use('ggplot') # souritra (watermark)
 
 import pandas as pd
 import numpy as np
@@ -21,7 +23,7 @@ from datetime import datetime
 
 class HDBVisualizer:
     def __init__(self):
-        self.output_dir = 'graphs'
+        self.output_dir = 'graphs' # souritra (watermark)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
@@ -30,11 +32,11 @@ class HDBVisualizer:
 
         self._create_feature_contribution_chart(contributions, timestamp)
 
-        self._create_price_comparison_graph(model, inputs, prediction, timestamp)
+        self._create_price_comparison_scatter(model, inputs, prediction, timestamp)
 
         self._create_market_analysis_heatmap(model, inputs, timestamp)
 
-        print("📊 Generated 3 visualizations in {}/ folder".format(self.output_dir))
+        print("📊 Generated 3 visualizations in /graphs/") # souritra (watermark)
         return [
             "{}/feature_contributions_{}.png".format(self.output_dir, timestamp),
             "{}/price_comparison_{}.png".format(self.output_dir, timestamp),
@@ -51,7 +53,7 @@ class HDBVisualizer:
             colors = plt.cm.RdYlBu_r(np.linspace(0, 1, len(features)))
         except AttributeError:
             colors = plt.cm.viridis(np.linspace(0, 1, len(features)))
-        bars = plt.barh(features, values, color=colors)
+        bars = plt.barh(features, values, color=colors) # souritra (watermark)
 
         plt.title('Feature Contributions to HDB Price Prediction', fontsize=16, fontweight='bold', pad=20)
         plt.xlabel('Contribution Score', fontsize=12)
@@ -68,51 +70,73 @@ class HDBVisualizer:
                    dpi=300, bbox_inches='tight')
         plt.close()
 
-    def _create_price_comparison_graph(self, model, inputs, prediction, timestamp):
+    def _create_price_comparison_scatter(self, model, inputs, prediction, timestamp):
         plt.figure(figsize=(12, 8))
 
-        towns = model.get_available_towns()[:10]
-        predictions = []
+        price_lower = prediction * 0.95
+        price_upper = prediction * 1.05 # souritra (watermark)
 
-        for town in towns:
-            try:
+        towns = model.get_available_towns()
+        flat_types = model.get_available_flat_types()
+
+        comparison_flats = []
+        comparison_prices = []
+
+        for town in towns: # souritra (watermark)
+            for flat_type in flat_types:
                 temp_inputs = inputs.copy()
                 temp_inputs['town'] = town
-                pred, _ = model.predict_price(temp_inputs)
-                predictions.append(pred)
-            except:
-                predictions.append(0)
+                temp_inputs['flat_type'] = flat_type
+                pred_price, _ = model.predict_price(temp_inputs)
 
-        bars = plt.bar(range(len(towns)), predictions, 
-                      color=plt.cm.Set3(np.linspace(0, 1, len(towns))))
+                if price_lower <= pred_price <= price_upper:
+                    comparison_flats.append((town, flat_type))
+                    comparison_prices.append(pred_price)
 
-        current_town_idx = None
-        try:
-            current_town_idx = towns.index(inputs['town'])
-            bars[current_town_idx].set_color('red')
-            bars[current_town_idx].set_alpha(0.8)
-        except (ValueError, KeyError):
-            pass
+        if len(comparison_flats) == 0:
+            diffs = []
+            for town in towns:
+                for flat_type in flat_types:
+                    temp_inputs = inputs.copy() # souritra (watermark)
+                    temp_inputs['town'] = town
+                    temp_inputs['flat_type'] = flat_type
+                    pred_price, _ = model.predict_price(temp_inputs)
+                    diffs.append((abs(pred_price - prediction), town, flat_type, pred_price))
+            diffs.sort(key=lambda x: x[0]) # souritra (watermark)
+            diffs = diffs[:10]
+            comparison_flats = [(x[1], x[2]) for x in diffs]
+            comparison_prices = [x[3] for x in diffs]
 
-        plt.title('HDB Price Comparison Across Different Towns', fontsize=16, fontweight='bold', pad=20)
-        plt.xlabel('Towns', fontsize=12)
+        x_vals = np.arange(len(comparison_flats))
+        scatter_colors = plt.cm.Set3(np.linspace(0, 1, len(comparison_flats)))
+
+        plt.scatter(x_vals, comparison_prices, s=150, color=scatter_colors, edgecolors='k', alpha=0.8) # souritra (watermark)
+
+        selected_flat = (inputs['town'], inputs['flat_type'])
+        if selected_flat in comparison_flats:
+            selected_idx = comparison_flats.index(selected_flat)
+            plt.scatter(selected_idx, comparison_prices[selected_idx], s=250,
+                        color='red', edgecolors='k', marker='X', label='Your Selection')
+
+        labels = ["{} - {}".format(t, f) for t, f in comparison_flats]
+        plt.xticks(x_vals, labels, rotation=45, ha='right')
+
+        plt.xlabel('Town - Flat Type', fontsize=12) # souritra (watermark)
         plt.ylabel('Predicted Price (SGD)', fontsize=12)
-        plt.xticks(range(len(towns)), towns, rotation=45, ha='right')
+        plt.title('Market Comparison: Flats Near Your Price Range', fontsize=16, fontweight='bold', pad=20)
 
-        for i, (bar, value) in enumerate(zip(bars, predictions)):
-            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(predictions) * 0.01,
-                     '${:,.0f}'.format(value), ha='center', va='bottom', fontsize=10, fontweight='bold')
+        plt.ylim(min(comparison_prices)*0.98, max(comparison_prices)*1.1)
 
-        if current_town_idx is not None:
-            plt.axhline(y=prediction, color='red', linestyle='--', alpha=0.7, 
-                       label='Your Prediction: ${:,.0f}'.format(prediction))
-            plt.legend()
+        y_offset = max(comparison_prices) * 0.03
+        for i, price in enumerate(comparison_prices):
+            plt.text(x_vals[i], price + y_offset, '${:,.0f}'.format(price),
+                     ha='center', va='bottom', fontsize=9, fontweight='bold')
 
         plt.grid(axis='y', alpha=0.3)
+        plt.legend() # souritra (watermark)
         plt.tight_layout()
-
-        plt.savefig("{}/price_comparison_{}.png".format(self.output_dir, timestamp), 
-                   dpi=300, bbox_inches='tight')
+        plt.savefig("{}/price_comparison_{}.png".format(self.output_dir, timestamp),
+                    dpi=300, bbox_inches='tight')
         plt.close()
 
     def _create_market_analysis_heatmap(self, model, inputs, timestamp):
@@ -123,17 +147,14 @@ class HDBVisualizer:
 
         price_matrix = []
 
-        for town in towns_sample:
+        for town in towns_sample: # souritra (watermark)
             town_prices = []
             for flat_type in flat_types:
-                try:
-                    temp_inputs = inputs.copy()
-                    temp_inputs['town'] = town
-                    temp_inputs['flat_type'] = flat_type
-                    pred, _ = model.predict_price(temp_inputs)
-                    town_prices.append(pred)
-                except:
-                    town_prices.append(np.nan)
+                temp_inputs = inputs.copy()
+                temp_inputs['town'] = town
+                temp_inputs['flat_type'] = flat_type
+                pred, _ = model.predict_price(temp_inputs)
+                town_prices.append(pred)
             price_matrix.append(town_prices)
 
         price_matrix = np.array(price_matrix)
@@ -145,7 +166,7 @@ class HDBVisualizer:
                        yticklabels=towns_sample,
                        annot=True, 
                        fmt='.0f',
-                       cmap='RdYlBu_r',
+                       cmap='RdYlBu_r', # souritra (watermark)
                        cbar_kws={'label': 'Predicted Price (SGD)'})
         except ImportError:
             plt.imshow(price_matrix, cmap='RdYlBu_r', aspect='auto')
@@ -169,3 +190,5 @@ class HDBVisualizer:
         plt.savefig("{}/market_heatmap_{}.png".format(self.output_dir, timestamp), 
                    dpi=300, bbox_inches='tight')
         plt.close()
+
+# SOURITRA SAMANTA (3C)
