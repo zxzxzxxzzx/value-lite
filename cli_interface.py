@@ -1,18 +1,21 @@
+# SOURITRA SAMANTA (3C)
+
 import os
 import pandas as pd
+import time
 
 from hdb_polynomial_model import HDBPolynomialPriceModel
 from data_processor import HDBDataProcessor
 from visualizer import HDBVisualizer
 
-try: 
+try:
     from colorama import init, Fore, Back, Style
-    init(autoreset=True) 
-    COLORAMA_AVAILABLE = True 
+    init(autoreset=True)
+    COLORAMA_AVAILABLE = True
 except ImportError:
     COLORAMA_AVAILABLE = False
 
-    class DummyColor: 
+    class DummyColor:
         RED = GREEN = YELLOW = BLUE = MAGENTA = CYAN = WHITE = RESET = BRIGHT = RESET_ALL = ""
 
     Fore = Back = Style = DummyColor()
@@ -21,15 +24,14 @@ except ImportError:
 class SimplifiedHDBCalculatorCLI:
 
     def __init__(self):
-        self.model = HDBPolynomialPriceModel()
+        self.model = HDBPolynomialPriceModel() 
         self.processor = HDBDataProcessor()
         self.visualizer = HDBVisualizer()
         self.session_predictions = []
 
     def clear_screen(self):
         import os
-        import sys
-
+        import sys 
         try:
             if os.name == 'nt':
                 os.system('cls')
@@ -43,7 +45,7 @@ class SimplifiedHDBCalculatorCLI:
                 pass
 
     def print_colored(self, text, color=None, style=None, end='\n'):
-        if COLORAMA_AVAILABLE and color:
+        if COLORAMA_AVAILABLE and color: # souritra (watermark)
             color_code = getattr(Fore, color.upper(), '')
             style_code = getattr(Style, style.upper(), '') if style else ''
             print("{}{}{}{}".format(style_code, color_code, text,
@@ -84,19 +86,17 @@ class SimplifiedHDBCalculatorCLI:
         """
         self.print_colored(banner, 'cyan', 'bright')
 
-    def show_main_menu(self):
+    def show_main_menu(self): # souritra (watermark)
         self.display_banner()
-        print("\n" + "=" * 50)
+        print("\n" + "=" * 40)
         self.print_colored("                MAIN MENU", 'yellow', 'bright')
-        print("=" * 50)
+        print("=" * 40)
         self.print_colored("1. Calculate HDB Price", 'green')
         self.print_colored("2. View Results History", 'blue')
         self.print_colored("3. Exit", 'red')
-        print("=" * 50)
+        print("=" * 40)
 
     def load_and_train_model(self):
-        self.print_colored("Loading data and training polynomial model...",
-                           'yellow')
         self.model.load_data('sample_data.csv')
         if self.model.df is not None:
             cleaned_data = self.processor.clean_data(self.model.df)
@@ -105,77 +105,56 @@ class SimplifiedHDBCalculatorCLI:
         metrics = self.model.get_model_metrics()
         polynomial_info = self.model.get_polynomial_equation_info()
 
-        print("\n" + "=" * 60)
+        print("\n" + "=" * 50)
         self.print_colored("              MODEL TRAINING SUMMARY", 'green',
                            'bright')
-        print("=" * 60)
-        print("Polynomial Degree:     {}".format(polynomial_info['degree']))
+        print("=" * 50)
         print("Training Samples:      {:,}".format(metrics['n_samples']))
         print("Original Features:     {}".format(metrics['n_features']))
-        print("Polynomial Features:   {:,}".format(
-            polynomial_info['n_features']))
         print("Training R²:           {:.4f}".format(metrics['train_r2']))
         print("Testing R²:            {:.4f}".format(metrics['test_r2']))
         print("Accuracy %:            {:.2f}%".format(metrics['test_r2'] *
                                                       100))
-        print("=" * 60)
-
-        import time
-        time.sleep(3)
+        print("=" * 50)
+        print("\nEntering main menu in 4 seconds...") # souritra (watermark)
+        time.sleep(4)
         self.clear_screen()
 
-        self.print_colored("Model trained successfully!", 'green', 'bright')
-        self.print_colored("\n🎉 Ready to use! Starting interface...", 'cyan')
-
-        print("")
-        self.print_rainbow("souritra coded this")
-        self.print_colored("hopefully this one doesn't crash :)", 'magenta',
+        self.display_banner()
+        self.print_rainbow("\nhttps://github.com/zxzxzxxzzx")
+        self.print_colored("Hopefully this one doesn't crash", 'magenta',
                            'bright')
 
-        time.sleep(2.5)
+        time.sleep(1.5)
         self.clear_screen()
 
     def predict_price(self):
-        if not self.model.is_trained:
-            self.print_colored(
-                "Error: Model not trained. Please train the model first.",
-                'red')
-            return
-        self.print_colored("\n🏠 Calculate HDB Price", 'cyan', 'bright')
+        self.print_rainbow("\nHDB Valuation Calculator (LITE)")
         inputs = self.collect_user_inputs()
-        if inputs:
-            is_valid, errors = self.processor.validate_input_data(inputs)
-            if not is_valid:
-                for error in errors:
-                    self.print_colored("Error: {}".format(error), 'red')
-                return
-            prediction, contributions = self.model.predict_price(inputs)
-            self.clear_screen()
-            self.display_prediction_results(inputs, prediction, contributions)
+        prediction, contributions = self.model.predict_price(inputs)
+        self.clear_screen()
+        self.display_prediction_results(inputs, prediction, contributions)
 
-            self.visualizer.generate_prediction_summary_visuals(
-                self.model, inputs, prediction, contributions)
+        self.visualizer.generate_prediction_summary_visuals(
+            self.model, inputs, prediction, contributions)
 
-            self.session_predictions.append({
-                'inputs': inputs.copy(),
-                'prediction': prediction,
-                'timestamp': pd.Timestamp.now()
-            })
+        self.session_predictions.append({
+            'inputs': inputs.copy(),
+            'prediction': prediction,
+            'timestamp': pd.Timestamp.now()
+        })
 
-            input("\nPress Enter to continue to main menu...")
+        input("\nPress Enter to continue to main menu...")
 
     def collect_user_inputs(self):
         inputs = {}
         towns = self.model.get_available_towns()
-        if not towns:
-            self.print_colored("Error: No towns available", 'red')
-            return None
 
         print("\nTowns ({} available):".format(len(towns)))
         for i, town in enumerate(towns, 1):
             print("  {}. {}".format(i, town))
         self.print_colored(
-            "\n💡 You can type the town number (1-{}) or town name".format(
+            "\n[TIP] You can type the town number (1-{}) or town name".format(
                 len(towns)), 'yellow')
 
         while True:
@@ -186,109 +165,113 @@ class SimplifiedHDBCalculatorCLI:
                     inputs['town'] = towns[town_idx]
                     break
                 else:
-                    self.print_colored(
-                        "❌ Invalid town number. Please select 1-{}".format(
-                            len(towns)), 'red')
+                    self.print_colored("[ERROR] Invalid town number", 'red')
             else:
                 town_upper = town_input.upper()
-                if town_upper in towns:
+                if town_upper in towns: # souritra (watermark)
                     inputs['town'] = town_upper
                     break
                 else:
-                    self.print_colored(
-                        "❌ Invalid town name. Please check the list above.",
-                        'red')
+                    self.print_colored("[ERROR] Invalid town name.", 'red')
 
         flat_types = self.model.get_available_flat_types()
-        print("Flat Types:")
+        print("\nFlat Types:")
         for i, flat_type in enumerate(flat_types, 1):
             print("  {}. {}".format(i, flat_type))
 
         while True:
-            flat_input = input("Select flat type [{}]: ".format(
-                "/".join([str(i) for i in range(1, len(flat_types) + 1)]))).strip()
+            flat_input = input("Select flat type [{}]: ".format("/".join(
+                [str(i) for i in range(1,
+                                       len(flat_types) + 1)]))).strip()
             if flat_input.isdigit():
                 flat_idx = int(flat_input) - 1
                 if 0 <= flat_idx < len(flat_types):
                     inputs['flat_type'] = flat_types[flat_idx]
                     break
             self.print_colored(
-                "❌ Invalid selection. Please select 1-{}".format(
-                    len(flat_types)), 'red')
+                "[ERROR] Please select 1 {}".format(len(flat_types)), 'red')
 
-        self.print_colored("💡 Typical ranges: 2-room (34-64 sqm), 3-room (60-90 sqm), 4-room (80-120 sqm)", 'yellow')
         while True:
             try:
+                self.print_colored("\n[TIP] Typical ranges: 2-room (34-64 sqm), 3-room (60-90 sqm), 4-room (80-120 sqm)", 'yellow')
                 area = float(input("Enter floor area (sqm): "))
+
                 if 30 <= area <= 300:
                     inputs['floor_area_sqm'] = area
                     break
                 else:
                     self.print_colored(
-                        "❌ Floor area must be between 30-300 sqm", 'red')
+                        "[ERROR] Floor area must be 30-300 sqm", 'red')
             except ValueError:
-                self.print_colored("❌ Please enter a valid number", 'red')
+                self.print_colored("[ERROR] Please enter a valid number", 'red')
 
         storey_ranges = self.model.get_available_storey_ranges()
-        print("Storey Ranges:")
+        print("\nStorey Ranges:")
         for i, storey in enumerate(storey_ranges, 1):
             print("  {}. {}".format(i, storey))
 
         while True:
-            storey_input = input("Select storey range [{}]: ".format(
-                "/".join([str(i) for i in range(1, len(storey_ranges) + 1)]))).strip()
+            storey_input = input("Select storey range [{}]: ".format("/".join(
+                [str(i) for i in range(1,
+                                       len(storey_ranges) + 1)]))).strip()
             if storey_input.isdigit():
                 storey_idx = int(storey_input) - 1
                 if 0 <= storey_idx < len(storey_ranges):
                     inputs['storey_range'] = storey_ranges[storey_idx]
                     break
             self.print_colored(
-                "❌ Invalid selection. Please select 1-{}".format(
+                "[ERROR] Invalid selection. Please select 1-{}".format(
                     len(storey_ranges)), 'red')
 
         flat_models = self.model.get_available_flat_models()
-        
-        # Simplify flat models display to show only common ones
-        common_models = ['MODEL A', 'IMPROVED', 'NEW GENERATION', 'PREMIUM APARTMENT', 'STANDARD', 'APARTMENT']
+
+        common_models = [
+            'MODEL A', 'IMPROVED', 'NEW GENERATION', 'PREMIUM APARTMENT',
+            'STANDARD', 'APARTMENT'
+        ]
         display_models = []
         for model in common_models:
             if model in flat_models:
                 display_models.append(model)
-        
-        # Add any remaining models not in common list
+
         for model in flat_models:
-            if model not in display_models:
+            if model not in display_models: # souritra (watermark)
                 display_models.append(model)
-        
-        print("Flat Models:")
-        for i, model in enumerate(display_models[:6], 1):  # Show only first 6 for cleaner display
-            display_name = model.replace('MODEL A', 'Model A').replace('NEW GENERATION', 'New Generation').replace('PREMIUM APARTMENT', 'Premium Apartment')
+
+        print("\nFlat Models:")
+        for i, model in enumerate(display_models[:6],
+                                  1):  
+            display_name = model.replace('MODEL A', 'Model A').replace(
+                'NEW GENERATION',
+                'New Generation').replace('PREMIUM APARTMENT',
+                                          'Premium Apartment')
             print("  {}. {}".format(i, display_name))
 
         while True:
-            model_input = input("Select flat model [{}]: ".format(
-                "/".join([str(i) for i in range(1, min(6, len(display_models)) + 1)]))).strip()
+            model_input = input("Select flat model [{}]: ".format("/".join(
+                [str(i)
+                 for i in range(1,
+                                min(6, len(display_models)) + 1)]))).strip()
             if model_input.isdigit():
                 model_idx = int(model_input) - 1
                 if 0 <= model_idx < min(6, len(display_models)):
                     inputs['flat_model'] = display_models[model_idx]
                     break
             self.print_colored(
-                "❌ Invalid selection. Please select 1-{}".format(
+                "[ERROR] Invalid selection. Please select 1-{}".format(
                     min(6, len(display_models))), 'red')
-
-        self.print_colored("💡 Most HDB flats have 50-90 years remaining lease", 'yellow')
         while True:
             try:
+                self.print_colored("\n[TIP] Most HDB flats have 50-90 years remaining lease", 'yellow')
                 remaining_lease = int(input("Enter remaining lease (years): "))
                 if 40 <= remaining_lease <= 99:
-                    inputs['remaining_lease'] = remaining_lease
+                    inputs['remaining_lease'] = remaining_lease # souritra (watermark)
                     break
                 else:
                     self.print_colored(
-                        "❌ Remaining lease must be between 40-99 years", 'red')
+                        "[ERROR] Remaining lease must be between 40-99 years", 'red')
             except ValueError:
-                self.print_colored("❌ Please enter a valid number", 'red')
+                self.print_colored("[ERROR] Please enter a valid number", 'red')
 
         return inputs
 
@@ -296,7 +279,7 @@ class SimplifiedHDBCalculatorCLI:
         print("\n" + "=" * 60)
         self.print_colored("              PREDICTION RESULTS", 'green',
                            'bright')
-        print("=" * 60)
+        print("=" * 60) # souritra (watermark)
         self.print_colored(
             "Predicted HDB Price: SGD ${:,.2f}".format(prediction), 'cyan',
             'bright')
@@ -310,7 +293,7 @@ class SimplifiedHDBCalculatorCLI:
 
     def view_history(self):
         if not self.session_predictions:
-            self.print_colored("⚠️ No previous predictions available",
+            self.print_colored("[ERROR] No previous predictions available",
                                'yellow')
             return
 
@@ -329,7 +312,7 @@ class SimplifiedHDBCalculatorCLI:
             area = str(record['inputs'].get('floor_area_sqm', ''))
             price = "${:,.0f}".format(record['prediction'])
             print("{:<20} {:<15} {:<10} {:<12} {:<15}".format(
-                timestamp, town, flat_type, area, price))
+                timestamp, town, flat_type, area, price)) # souritra (watermark)
         print("=" * 80)
         input("\nPress Enter to continue to main menu...")
 
@@ -338,7 +321,7 @@ class SimplifiedHDBCalculatorCLI:
         self.display_banner()
         self.load_and_train_model()
 
-        self.print_colored("\n🎉 Ready to use! Starting interface...", 'green')
+        self.print_rainbow("\nReady to use! Starting interface...")
 
         while True:
             self.clear_screen()
@@ -351,11 +334,11 @@ class SimplifiedHDBCalculatorCLI:
                 self.clear_screen()
                 self.view_history()
             elif choice == "3":
-                self.print_colored(
-                    "\n👋 Thank you for using HDB Polynomial Price Calculator!",
-                    'green', 'bright')
+                self.print_rainbow("\nThank you for using the HDB Valuation Calculator!")
                 break
             else:
                 self.print_colored(
-                    "❌ Invalid choice. Please select 1, 2, or 3.", 'red')
+                    "[ERROR] Please select 1, 2, or 3 only.", 'red')
                 input("Press Enter to continue...")
+
+# SOURITRA SAMANTA (3C)
