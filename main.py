@@ -1,19 +1,19 @@
+# SOURITRA SAMANTA (3C)
+
 import sys
 import os
 from cli_interface import SimplifiedHDBCalculatorCLI
 
 def main():
-    print("🔄 Starting HDB Polynomial Price Calculator...")
-    
     try:
         import pandas, sklearn, numpy
-        print("✅ All required packages available")
+        print("[SUCCESS] All packages available")
     except ImportError as e:
-        print("❌ Missing required package: {}".format(e))
+        print("[ERROR] Missing package: {}".format(e)) # souritra (watermark)
         return
     
     if not os.path.exists('sample_data.csv'):
-        print("⚠️ Main data file not found - please ensure sample_data.csv is available")
+        print("[ERROR] Could you download sample_data.csv first bro...")
         return
     
     calculator = SimplifiedHDBCalculatorCLI()
@@ -21,3 +21,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# SOURITRA SAMANTA (3C)
