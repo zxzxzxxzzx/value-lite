@@ -34,24 +34,22 @@ In the event that the library cannot be automatically installed, you may need to
 
 ### Step 2: Initial Setup (Automatic)
 The application will automatically:
-1. Load the complete HDB dataset (37,153 records)
+1. Load the complete HDB dataset
 2. Clean and preprocess the data
-3. Train the 4th degree polynomial regression model
+3. Train the 3rd degree polynomial regression model
 4. Display a model training summary with accuracy metrics shortly after**¹**
 
 **Expected Output:**
 ```
-============================================================
+==================================================
               MODEL TRAINING SUMMARY
-============================================================
-Polynomial Degree:     4
-Training Samples:      36,761
+==================================================
+Training Samples:      29,408
 Original Features:     6
-Polynomial Features:   209
-Training R²:           0.7317
-Testing R²:            0.7293
-Accuracy %:            72.93%
-============================================================
+Training R²:           0.6993
+Testing R²:            0.7059
+Accuracy %:            70.59%
+==================================================
 ```
 
 After setup, you'll see:
@@ -125,7 +123,7 @@ FileNotFoundError: sample_data.csv
 - **Training Time**: ~10-15 seconds on first run
 - **Prediction Time**: <1 second per prediction
 - **Memory Usage**: ~50-100MB for complete dataset
-- **Accuracy**: ~73% (R² score)**¹**
+- **Accuracy**: ~71% (R² score)**¹**
 
 ## Advanced Usage
 
